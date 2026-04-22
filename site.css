@@ -292,7 +292,9 @@ body.site-body {
 
 .landing-hero__photo {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--cup-space-lg);
   /* Pull photo above text on mobile */
   order: -1;
 }
@@ -303,6 +305,16 @@ body.site-body {
   border-radius: var(--cup-radius-full);
   object-fit: cover;
   border: 2px solid var(--cup-color-border);
+}
+
+.landing-hero__photo .landing-quote {
+  text-align: center;
+  padding: 0;
+  border-left: none;
+  border-top: 1px solid var(--cup-color-border);
+  padding-top: var(--cup-space-md);
+  margin: 0;
+  max-width: 100%;
 }
 
 .landing-name {
@@ -427,7 +439,7 @@ body.site-body {
   }
 
   .landing-hero {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr 300px;
   }
 
   /* Restore natural left-body / right-photo order on desktop */
