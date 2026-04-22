@@ -1,28 +1,89 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Joshua Wink</title>
-  <style>
-    body { font-family: system-ui, sans-serif; background: #0d1117; color: #e6edf3; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; }
-    .card { text-align: center; max-width: 480px; padding: 2rem; }
-    h1 { font-size: 2rem; margin-bottom: 0.5rem; }
-    p { color: #8b949e; }
-    a { color: #58a6ff; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .links { display: flex; gap: 1.5rem; justify-content: center; margin-top: 1.5rem; }
-  </style>
+  <title>Joshua Wink | GitHub Pages Index</title>
+  <meta name="description" content="Search every live GitHub Pages project under joshuawink.github.io and jump straight into demos, prototypes, and experiments.">
+  <link rel="stylesheet" href="./cup-ui/cup.css">
+  <link rel="stylesheet" href="./site.css">
 </head>
-<body>
-  <div class="card">
-    <h1>Joshua Wink</h1>
-    <p>Software Engineer</p>
-    <div class="links">
-      <a href="/space-invaders/">Space Invaders</a>
+<body class="site-body">
+  <a class="cup-skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <div class="site-header__brand">
+      <span class="cup-badge cup-badge--info">GitHub Pages</span>
+      <strong>Joshua Wink</strong>
+    </div>
+    <nav class="cup-nav" aria-label="Primary navigation">
       <a href="https://github.com/JoshuaWink">GitHub</a>
       <a href="https://orchestrate.solutions">Orchestrate</a>
-    </div>
-  </div>
+      <a href="https://joshuawink.github.io/space-invaders/">Space Invaders</a>
+    </nav>
+  </header>
+
+  <main id="main-content" class="site-main">
+    <section class="site-hero cup-card" data-effect="fade-in">
+      <div class="cup-card___body">
+        <div class="site-kicker">
+          <span class="cup-badge cup-badge--success">Live scan</span>
+          <span class="cup-badge cup-badge--default">cup-ui static site</span>
+        </div>
+
+        <div>
+          <h1 class="site-title">Every live page under joshuawink.github.io/*</h1>
+          <p class="site-lede">This homepage now scans JoshuaWink repositories with GitHub Pages enabled, normalizes them into a single index, and makes them searchable from a fast browser-side dropdown. No server. No CMS. Just GitHub Pages, cup-ui, and the GitHub API.</p>
+        </div>
+
+        <div class="site-hero__meta" aria-label="Site metrics">
+          <article class="site-stat">
+            <strong id="project-total">0</strong>
+            <span>pages projects discovered</span>
+          </article>
+          <article class="site-stat">
+            <strong id="scan-source-label">Seed cache</strong>
+            <span>current data source</span>
+          </article>
+          <article class="site-stat">
+            <strong id="scan-updated">Checking GitHub</strong>
+            <span>last scan attempt</span>
+          </article>
+        </div>
+
+        <form id="project-jump-form" class="site-search" action="/" novalidate>
+          <div class="cup-field site-search__field">
+            <label class="cup-label" for="project-search">Search or jump to a project</label>
+            <div class="site-search__input-row">
+              <input id="project-search" class="cup-input" type="search" placeholder="Type a repo name, title, or keyword" autocomplete="off" aria-controls="project-menu" aria-expanded="false" aria-describedby="search-hint">
+              <button class="cup-button cup-button--primary cup-button--lg" type="submit">Open first match</button>
+              <button class="cup-button cup-button--secondary" type="button" id="clear-search">Clear</button>
+            </div>
+            <span id="search-hint" class="cup-hint">Booting with the current known Pages list, then refreshing live from GitHub.</span>
+            <div id="project-menu" class="site-search__menu cup-card" role="listbox" hidden></div>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <section class="site-section" aria-labelledby="pages-heading">
+      <div class="site-section__header">
+        <div>
+          <span id="scan-source" class="cup-badge cup-badge--default">Seed cache</span>
+          <h2 id="pages-heading">Live Pages projects</h2>
+        </div>
+        <p id="scan-status" class="site-section__status">Loading GitHub Pages repositories...</p>
+      </div>
+
+      <div id="project-grid" class="site-project-grid" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <span>Built with cup-ui and a browser-side Pages scanner.</span>
+    <a href="https://joshuawink.github.io/">joshuawink.github.io</a>
+  </footer>
+
+  <script type="module" src="./site.js"></script>
 </body>
 </html>

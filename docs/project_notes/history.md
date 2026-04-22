@@ -25,3 +25,34 @@ parking/Website Builder.
   www-canonical + apex forwarding.
 - GitHub Pages Let's Encrypt cert provisions quickly (~minutes) once DNS resolves.
 - `gh api` can set `https_enforced` without touching the GitHub UI.
+
+## 2026-04-21 Homepage redesign — cup-ui project index
+
+**What**: Replaced the placeholder landing page with a cup-ui powered homepage
+that scans JoshuaWink repos for GitHub Pages, renders a searchable jump box, and
+lists every live Pages project as a card.
+
+**Why**: joshuawink.com should be the front door for all live projects under
+`joshuawink.github.io/*`, not just a static page with a few manual links.
+
+**Steps taken**:
+1. Vendored the minimal `cup-ui` CSS bundle and `cup-ui/docs/cup-pipe.js` into the repo
+2. Replaced the old `index.html` with a cup-ui based shell and responsive layout
+3. Added `site.css` for the homepage visual system and search dropdown styling
+4. Added `site.js` with a browser-side pipeline:
+   - seed fallback data
+   - live GitHub repo scan
+   - URL normalization
+   - searchable dropdown rendering
+   - project grid rendering
+5. Validated locally with `python3 -m http.server` + browser snapshot
+
+**Outcome**: The homepage now discovers 8 live Pages projects and can filter them
+instantly from a search box.
+
+**Lessons**:
+- GitHub repo metadata (`has_pages`) is enough to build a usable Pages index
+  without any server-side code.
+- Shipping a seeded fallback list avoids an empty homepage when the GitHub API is
+  slow or unavailable.
+- Vendoring the design-system assets keeps the Pages repo standalone and deployable.

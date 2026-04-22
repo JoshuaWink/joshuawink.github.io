@@ -9,11 +9,29 @@ Personal landing page served via GitHub Pages at **https://www.joshuawink.com**
 - **DNS**: GoDaddy nameservers
 - **Repo**: github.com/JoshuaWink/joshuawink.github.io
 - **Branch**: `main` (root `/`)
-- **Content**: Single `index.html`, no build step, no framework
+- **UI System**: vendored `cup-ui` CSS bundle + browser pipeline runtime
+- **Runtime**: browser-side ES modules (`site.js` + `cup-ui/docs/cup-pipe.js`)
+- **Data Source**: GitHub REST API (`/users/JoshuaWink/repos`) filtered to repos with `has_pages = true`
+- **Content**: static HTML + CSS + JS, no build step, no server
 
 ## Important Files
 - `CNAME` — tells GitHub Pages the custom domain (`www.joshuawink.com`)
-- `index.html` — the entire site
+- `index.html` — shell markup for the homepage
+- `site.css` — site-specific layout and visual treatment on top of cup-ui
+- `site.js` — scans GitHub Pages repos, normalizes URLs, renders dropdown + cards
+- `cup-ui/` — local copy of the CSS bundle and `docs/cup-pipe.js` runtime used by the homepage
+
+## Homepage Architecture
+1. `index.html` boots immediately with the local cup-ui CSS bundle
+2. `site.js` seeds the page with a known Pages list so the homepage is never empty
+3. `site.js` then fetches JoshuaWink repos from GitHub and filters to `has_pages = true`
+4. URLs are normalized to `https://joshuawink.github.io/<repo>/` unless a repo already provides a matching homepage
+5. The page renders:
+  - searchable dropdown / jump box
+  - live project cards
+  - source / scan metadata
+
+This is still fully static hosting. The browser does the scan at runtime.
 
 ## DNS Configuration (GoDaddy)
 
