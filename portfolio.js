@@ -369,18 +369,17 @@ function renderGrid() {
 
   const { folios, standalone } = groupIntoFolios(state.filteredProjects);
 
-  // Build a unified list sorted by most-recent-update
+  // Standalone cards first (fill grid rows), then folios (full-width)
+  standalone.sort((a, b) => b.updatedAtMs - a.updatedAtMs);
+  folios.sort((a, b) => b.updatedAtMs - a.updatedAtMs);
+
   const items = [];
-
-  for (const folio of folios) {
-    items.push({ type: 'folio', data: folio, updatedAtMs: folio.updatedAtMs });
-  }
-
   for (const project of standalone) {
     items.push({ type: 'project', data: project, updatedAtMs: project.updatedAtMs });
   }
-
-  items.sort((a, b) => b.updatedAtMs - a.updatedAtMs);
+  for (const folio of folios) {
+    items.push({ type: 'folio', data: folio, updatedAtMs: folio.updatedAtMs });
+  }
 
   refs.projectGrid.innerHTML = items.map((item) => {
     if (item.type === 'folio') {
