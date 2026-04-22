@@ -442,6 +442,10 @@ body.site-body {
     grid-template-columns: 1fr 300px;
   }
 
+  .landing-hero__body {
+    align-self: center;
+  }
+
   /* Restore natural left-body / right-photo order on desktop */
   .landing-hero__photo {
     order: 0;
