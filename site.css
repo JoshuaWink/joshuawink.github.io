@@ -278,6 +278,8 @@ body.site-body {
 .landing-hero__photo {
   display: flex;
   justify-content: center;
+  /* Pull photo above text on mobile */
+  order: -1;
 }
 
 .landing-hero__photo img {
@@ -411,6 +413,11 @@ body.site-body {
 
   .landing-hero {
     grid-template-columns: 1fr auto;
+  }
+
+  /* Restore natural left-body / right-photo order on desktop */
+  .landing-hero__photo {
+    order: 0;
   }
 
   .landing-hero__photo img {
