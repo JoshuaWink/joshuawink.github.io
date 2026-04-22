@@ -221,6 +221,21 @@ body.site-body {
 
 .site-footer__scan:empty { display: none; }
 
+.site-footer__links {
+  display: flex;
+  gap: var(--cup-space-md);
+}
+
+.site-footer__links a {
+  color: var(--cup-color-secondary);
+  text-decoration: none;
+  font-size: var(--cup-font-size-xs);
+}
+
+.site-footer__links a:hover {
+  color: var(--cup-color-primary);
+}
+
 /* ── Portfolio: Sticky Search Banner ── */
 
 .portfolio-bar {
@@ -315,8 +330,22 @@ body.site-body {
 
 .landing-about {
   display: grid;
-  gap: var(--cup-space-lg);
+  gap: var(--cup-space-xl);
   max-width: 42rem;
+}
+
+.landing-about__block {
+  display: grid;
+  gap: var(--cup-space-xs);
+}
+
+.landing-about__label {
+  margin: 0;
+  font-size: var(--cup-font-size-sm);
+  font-weight: var(--cup-font-weight-medium);
+  color: var(--cup-color-primary);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 
 .landing-quote {
@@ -372,27 +401,7 @@ body.site-body {
   line-height: var(--cup-line-height);
 }
 
-.landing-connect {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--cup-space-md);
-}
 
-.landing-connect a {
-  color: var(--cup-color-on-surface);
-  text-decoration: none;
-  font-size: var(--cup-font-size-sm);
-  padding: var(--cup-space-sm) 0;
-  border-bottom: 1px solid var(--cup-color-border);
-  min-height: var(--cup-touch-min);
-  display: inline-flex;
-  align-items: center;
-}
-
-.landing-connect a:hover {
-  color: var(--cup-color-primary);
-  border-color: var(--cup-color-primary);
-}
 
 /* ── Breakpoints: layer enhancements ── */
 
