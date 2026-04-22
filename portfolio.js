@@ -5,6 +5,20 @@ const GITHUB_PAGES_ROOT = 'https://joshuawink.github.io';
 const GITHUB_REPO_ROOT = `https://github.com/${GITHUB_USER}`;
 const SEARCH_MENU_LIMIT = 8;
 
+/*
+ * FOLIO_DEFS — auto-grouping rules.
+ * Any project whose name matches `match` bundles into that folio.
+ * Folios render as collapsible groups; unmatched projects stay standalone.
+ */
+const FOLIO_DEFS = [
+  {
+    id: 'dbqhelp',
+    title: 'DBQ Help',
+    description: 'Veteran mental health evaluation service — design iterations and prototypes',
+    match: /dbqhelp/i,
+  },
+];
+
 const SEED_REPOS = [
   {
     name: 'dbqhelp',
@@ -201,6 +215,47 @@ function filterProjects(projects, query) {
   return projects.filter((project) => project.searchable.includes(cleaned));
 }
 
+/**
+ * Group projects into folios and standalone items.
+ * Returns { folios: [...], standalone: [...] }
+ */
+function groupIntoFolios(projects) {
+  const folios = [];
+  const claimed = new Set();
+
+  for (const def of FOLIO_DEFS) {
+    const members = projects.filter((p) => def.match.test(p.name));
+
+    if (members.length < 2) {
+      continue;
+    }
+
+    for (const m of members) {
+      claimed.add(m.name);
+    }
+
+    const latestMs = Math.max(...members.map((m) => m.updatedAtMs));
+    const latestMember = members.find((m) => m.updatedAtMs === latestMs) || members[0];
+
+    folios.push({
+      id: def.id,
+      title: def.title,
+      description: def.description,
+      members: members,
+      count: members.length,
+      updatedAtMs: latestMs,
+      updatedLabel: latestMember.updatedLabel,
+    });
+  }
+
+  const standalone = projects.filter((p) => !claimed.has(p.name));
+
+  // Sort folios + standalone together by most recent update
+  folios.sort((a, b) => b.updatedAtMs - a.updatedAtMs);
+
+  return { folios, standalone };
+}
+
 function getVisibleProjects() {
   return state.filteredProjects.slice(0, SEARCH_MENU_LIMIT);
 }
@@ -312,7 +367,32 @@ function renderGrid() {
     return;
   }
 
-  refs.projectGrid.innerHTML = state.filteredProjects.map((project) => `
+  const { folios, standalone } = groupIntoFolios(state.filteredProjects);
+
+  // Build a unified list sorted by most-recent-update
+  const items = [];
+
+  for (const folio of folios) {
+    items.push({ type: 'folio', data: folio, updatedAtMs: folio.updatedAtMs });
+  }
+
+  for (const project of standalone) {
+    items.push({ type: 'project', data: project, updatedAtMs: project.updatedAtMs });
+  }
+
+  items.sort((a, b) => b.updatedAtMs - a.updatedAtMs);
+
+  refs.projectGrid.innerHTML = items.map((item) => {
+    if (item.type === 'folio') {
+      return renderFolioCard(item.data);
+    }
+
+    return renderProjectCard(item.data);
+  }).join('');
+}
+
+function renderProjectCard(project) {
+  return `
     <article class="cup-card site-project">
       <div class="cup-card___body">
         <h3>${escapeHtml(project.title)}</h3>
@@ -324,7 +404,24 @@ function renderGrid() {
         <a class="cup-button cup-button--secondary" href="${escapeHtml(project.repoUrl)}" target="_blank" rel="noreferrer">Source</a>
       </div>
     </article>
-  `).join('');
+  `;
+}
+
+function renderFolioCard(folio) {
+  return `
+    <details class="site-folio">
+      <summary class="site-folio__summary cup-card">
+        <div class="cup-card___body">
+          <h3>${escapeHtml(folio.title)} <span class="site-folio__count">${folio.count}</span></h3>
+          <p>${escapeHtml(folio.description)}</p>
+          <span class="site-project__updated">Updated ${escapeHtml(folio.updatedLabel)}</span>
+        </div>
+      </summary>
+      <div class="site-folio__children">
+        ${folio.members.map((project) => renderProjectCard(project)).join('')}
+      </div>
+    </details>
+  `;
 }
 
 function renderView() {
