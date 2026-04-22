@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Portfolio — Joshua Wink</title>
+  <meta name="description" content="Live demos, prototypes, and experiments by Joshua Wink — all hosted on GitHub Pages.">
+  <link rel="stylesheet" href="./cup-ui/cup.css">
+  <link rel="stylesheet" href="./site.css">
+</head>
+<body class="site-body site-body--portfolio">
+  <a class="cup-skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <a class="site-header__brand" href="/">Joshua Wink</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="/" class="site-nav__link">Home</a>
+      <a href="/portfolio.html" class="site-nav__link" aria-current="page">Portfolio</a>
+      <a href="https://github.com/JoshuaWink">GitHub</a>
+    </nav>
+  </header>
+
+  <div class="portfolio-bar" id="portfolio-bar">
+    <form id="project-jump-form" class="portfolio-bar__inner" action="/portfolio.html" novalidate>
+      <label class="cup-sr-only" for="project-search">Search projects</label>
+      <input
+        id="project-search"
+        class="cup-input portfolio-bar__input"
+        type="search"
+        placeholder="Search projects…"
+        autocomplete="off"
+        aria-controls="project-menu"
+        aria-expanded="false"
+        aria-describedby="search-hint"
+      >
+      <span id="search-hint" class="portfolio-bar__hint">
+        <span id="project-total">0</span> projects ·
+        <span id="scan-source-label">Loading</span>
+      </span>
+      <div id="project-menu" class="site-search__menu cup-card" role="listbox" hidden></div>
+    </form>
+  </div>
+
+  <main id="main-content" class="site-main">
+    <p id="scan-status" class="site-status" aria-live="polite">Loading…</p>
+    <div id="project-grid" class="site-grid" aria-live="polite"></div>
+  </main>
+
+  <footer class="site-footer">
+    <span>&copy; Joshua Wink</span>
+    <span id="scan-updated" class="site-footer__scan"></span>
+  </footer>
+
+  <script type="module" src="./portfolio.js"></script>
+</body>
+</html>

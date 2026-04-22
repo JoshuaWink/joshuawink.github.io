@@ -69,12 +69,10 @@ const state = {
 };
 
 const refs = {
-  clearButton: document.querySelector('#clear-search'),
   projectGrid: document.querySelector('#project-grid'),
   projectMenu: document.querySelector('#project-menu'),
   projectSearch: document.querySelector('#project-search'),
   projectTotal: document.querySelector('#project-total'),
-  scanSource: document.querySelector('#scan-source'),
   scanSourceLabel: document.querySelector('#scan-source-label'),
   scanStatus: document.querySelector('#scan-status'),
   scanUpdated: document.querySelector('#scan-updated'),
@@ -240,22 +238,18 @@ function closeMenu() {
 function updateHeaderMeta() {
   refs.projectTotal.textContent = String(state.projects.length);
 
-  const sourceLabel = state.dataSource === 'live' ? 'Live GitHub scan' : 'Seed cache';
-
-  refs.scanSource.textContent = sourceLabel;
+  const sourceLabel = state.dataSource === 'live' ? 'Live scan' : 'Cached';
   refs.scanSourceLabel.textContent = sourceLabel;
 
   if (state.lastScannedAt) {
-    refs.scanUpdated.textContent = formatUpdatedLabel(state.lastScannedAt);
+    refs.scanUpdated.textContent = `Last scanned ${formatUpdatedLabel(state.lastScannedAt)}`;
   } else {
-    refs.scanUpdated.textContent = 'Scanning GitHub now';
+    refs.scanUpdated.textContent = '';
   }
 
-  const status = state.error
+  refs.scanStatus.textContent = state.error
     ? `${state.status} (${state.error})`
     : state.status;
-
-  refs.scanStatus.textContent = status;
 }
 
 function updateSearchHint() {
@@ -263,17 +257,18 @@ function updateSearchHint() {
   const matchCount = state.filteredProjects.length;
 
   if (!query) {
-    refs.searchHint.textContent = `Showing ${state.projects.length} known Pages project${state.projects.length === 1 ? '' : 's'}. Type to filter, then press Enter to open the first match.`;
+    refs.searchHint.innerHTML = `<span id="project-total">${state.projects.length}</span> projects · <span id="scan-source-label">${state.dataSource === 'live' ? 'Live scan' : 'Cached'}</span>`;
+    refs.projectTotal = document.querySelector('#project-total');
+    refs.scanSourceLabel = document.querySelector('#scan-source-label');
     return;
   }
 
   if (!matchCount) {
-    refs.searchHint.textContent = `No Pages projects matched "${query}". Try a repo name like space-invaders or dbqhelp.`;
+    refs.searchHint.textContent = `No matches for "${query}"`;
     return;
   }
 
-  const firstMatch = state.filteredProjects[0];
-  refs.searchHint.textContent = `${matchCount} match${matchCount === 1 ? '' : 'es'} for "${query}". Press Enter to open ${firstMatch.name}.`;
+  refs.searchHint.textContent = `${matchCount} match${matchCount === 1 ? '' : 'es'}`;
 }
 
 function renderMenu() {
@@ -309,8 +304,8 @@ function renderGrid() {
     refs.projectGrid.innerHTML = `
       <article class="cup-card site-empty">
         <div class="cup-card___body">
-          <h3>No Pages projects match the current search</h3>
-          <p>Clear the filter or try a narrower keyword. The live scan is indexing repos with GitHub Pages enabled under joshuawink.github.io/*.</p>
+          <h3>No projects match your search</h3>
+          <p>Try a different keyword.</p>
         </div>
       </article>
     `;
@@ -318,21 +313,14 @@ function renderGrid() {
   }
 
   refs.projectGrid.innerHTML = state.filteredProjects.map((project) => `
-    <article class="cup-card site-project" data-effect="slide-up">
+    <article class="cup-card site-project">
       <div class="cup-card___body">
-        <div class="site-project__meta">
-          <span class="cup-badge cup-badge--success">Live</span>
-          <span class="cup-badge cup-badge--default">${escapeHtml(project.name)}</span>
-          <span class="cup-badge cup-badge--info">Updated ${escapeHtml(project.updatedLabel)}</span>
-        </div>
-        <div>
-          <h3>${escapeHtml(project.title)}</h3>
-          <p>${escapeHtml(project.description)}</p>
-        </div>
-        <div class="site-project__url">${escapeHtml(project.url)}</div>
+        <h3>${escapeHtml(project.title)}</h3>
+        <p>${escapeHtml(project.description)}</p>
+        <span class="site-project__updated">Updated ${escapeHtml(project.updatedLabel)}</span>
       </div>
       <div class="cup-card___footer">
-        <a class="cup-button cup-button--primary" href="${escapeHtml(project.url)}">Open project</a>
+        <a class="cup-button cup-button--primary" href="${escapeHtml(project.url)}">Open</a>
         <a class="cup-button cup-button--secondary" href="${escapeHtml(project.repoUrl)}" target="_blank" rel="noreferrer">Source</a>
       </div>
     </article>
@@ -425,15 +413,6 @@ function wireInteractions() {
     navigateToProject(getNavigationTarget());
   });
 
-  refs.clearButton.addEventListener('click', () => {
-    refs.projectSearch.value = '';
-    state.activeIndex = 0;
-    syncFilteredProjects();
-    openMenu();
-    renderView();
-    refs.projectSearch.focus();
-  });
-
   refs.projectMenu.addEventListener('click', (event) => {
     const button = event.target.closest('.site-menu-item');
 
@@ -490,7 +469,7 @@ class SeedProjectsFilter {
     return payload
       .insert('projects', dedupeProjects(SEED_REPOS))
       .insert('source', 'seed')
-      .insert('status', 'Showing the cached Pages index while GitHub is scanned live.')
+      .insert('status', 'Loading from cache…')
       .insert('error', null)
       .insert('lastScannedAt', null);
   }
@@ -524,14 +503,14 @@ class ScanLiveProjectsFilter {
       return payload
         .insert('liveRepos', liveRepos)
         .insert('source', 'live')
-        .insert('status', `Scanned ${liveRepos.length} repositories with GitHub Pages enabled.`)
+        .insert('status', `${liveRepos.length} repos scanned`)
         .insert('error', null)
         .insert('lastScannedAt', new Date().toISOString());
     } catch (error) {
       return payload
         .insert('liveRepos', [])
         .insert('source', payload.get('source', 'seed'))
-        .insert('status', 'GitHub scan failed. Keeping the cached Pages index in place.')
+        .insert('status', 'Scan failed — showing cached data')
         .insert('error', error instanceof Error ? error.message : String(error))
         .insert('lastScannedAt', new Date().toISOString());
     }
@@ -559,7 +538,7 @@ async function boot() {
 }
 
 boot().catch((error) => {
-  state.status = 'The project index could not finish booting.';
+  state.status = 'Failed to load — showing cached projects';
   state.error = error instanceof Error ? error.message : String(error);
   state.projects = dedupeProjects(SEED_REPOS);
   renderView();
