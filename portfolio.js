@@ -1,8 +1,10 @@
 import { Payload, Pipeline } from './cup-ui/docs/cup-pipe.js';
 
 const GITHUB_USER = 'JoshuaWink';
+const GITHUB_ORG = 'orchestrate-solutions';
 const GITHUB_PAGES_ROOT = 'https://joshuawink.github.io';
 const GITHUB_REPO_ROOT = `https://github.com/${GITHUB_USER}`;
+const GITHUB_ORG_ROOT = `https://github.com/${GITHUB_ORG}`;
 const SEARCH_MENU_LIMIT = 8;
 
 /*
@@ -153,24 +155,48 @@ function formatUpdatedLabel(updatedAt) {
 }
 
 function normalizeRepo(repo) {
-  if (!repo || !repo.name || repo.name === 'joshuawink.github.io') {
+  if (!repo || !repo.name || repo.name === 'joshuawink.github.io' || repo.name === '.github') {
     return null;
   }
 
+  // Skip forks — portfolio is for original work only
+  if (repo.fork) {
+    return null;
+  }
+
+  const owner = repo.owner ? repo.owner.login : GITHUB_USER;
+  const isOrg = owner.toLowerCase() === GITHUB_ORG.toLowerCase();
+  const repoRoot = isOrg ? GITHUB_ORG_ROOT : GITHUB_REPO_ROOT;
   const homepage = typeof repo.homepage === 'string' ? repo.homepage.trim() : '';
-  const url = homepage.startsWith(GITHUB_PAGES_ROOT)
-    ? ensureTrailingSlash(homepage)
-    : `${GITHUB_PAGES_ROOT}/${repo.name}/`;
+
+  // Determine URL: prefer homepage, then Pages if available, then repo URL
+  let url;
+  if (homepage && homepage.startsWith('http')) {
+    url = ensureTrailingSlash(homepage);
+  } else if (repo.has_pages) {
+    url = `${GITHUB_PAGES_ROOT}/${repo.name}/`;
+  } else {
+    url = repo.html_url || `${repoRoot}/${repo.name}`;
+  }
+
+  const hasLiveSite = homepage.startsWith('http') || repo.has_pages;
   const updatedAt = repo.updated_at || new Date().toISOString();
   const updatedAtMs = Date.parse(updatedAt) || 0;
   const title = humanizeName(repo.name);
-  const description = (repo.description || 'GitHub Pages project published under joshuawink.github.io.').trim();
+  const description = (repo.description || 'Project by Joshua Wink.').trim();
+  const language = repo.language || null;
+  const stars = repo.stargazers_count || 0;
 
   return {
     description,
+    hasLiveSite,
+    isOrg,
+    language,
     name: repo.name,
-    repoUrl: repo.html_url || `${GITHUB_REPO_ROOT}/${repo.name}`,
-    searchable: [repo.name, title, description, url].join(' ').toLowerCase(),
+    owner,
+    repoUrl: repo.html_url || `${repoRoot}/${repo.name}`,
+    searchable: [repo.name, title, description, url, language, owner].filter(Boolean).join(' ').toLowerCase(),
+    stars,
     title,
     updatedAt,
     updatedAtMs,
@@ -391,16 +417,24 @@ function renderGrid() {
 }
 
 function renderProjectCard(project) {
+  const langBadge = project.language
+    ? `<span class="site-project__lang">${escapeHtml(project.language)}</span>`
+    : '';
+  const orgBadge = project.isOrg
+    ? `<span class="site-project__org">Orchestrate</span>`
+    : '';
+  const primaryLabel = project.hasLiveSite ? 'Open' : 'View';
+
   return `
     <article class="cup-card site-project">
       <div class="cup-card___body">
         <h3>${escapeHtml(project.title)}</h3>
         <p>${escapeHtml(project.description)}</p>
-        <span class="site-project__updated">Updated ${escapeHtml(project.updatedLabel)}</span>
+        <span class="site-project__updated">${orgBadge}${langBadge}Updated ${escapeHtml(project.updatedLabel)}</span>
       </div>
       <div class="cup-card___footer">
-        <a class="cup-button cup-button--primary" href="${escapeHtml(project.url)}">Open</a>
-        <a class="cup-button cup-button--secondary" href="${escapeHtml(project.repoUrl)}" target="_blank" rel="noreferrer">Source</a>
+        <a class="cup-button cup-button--primary" href="${escapeHtml(project.url)}">${primaryLabel}</a>
+        ${project.hasLiveSite ? `<a class="cup-button cup-button--secondary" href="${escapeHtml(project.repoUrl)}" target="_blank" rel="noreferrer">Source</a>` : ''}
       </div>
     </article>
   `;
@@ -533,8 +567,9 @@ function wireInteractions() {
 
 async function fetchPagesRepos() {
   const repos = [];
-  let page = 1;
 
+  // Fetch from personal account
+  let page = 1;
   while (true) {
     const response = await fetch(`https://api.github.com/users/${GITHUB_USER}/repos?per_page=100&page=${page}&sort=updated`, {
       headers: {
@@ -547,7 +582,6 @@ async function fetchPagesRepos() {
     }
 
     const pageRepos = await response.json();
-
     repos.push(...pageRepos);
 
     if (pageRepos.length < 100) {
@@ -557,7 +591,38 @@ async function fetchPagesRepos() {
     page += 1;
   }
 
-  return repos.filter((repo) => repo.has_pages && repo.name !== 'joshuawink.github.io');
+  // Fetch from orchestrate-solutions org
+  page = 1;
+  while (true) {
+    const response = await fetch(`https://api.github.com/orgs/${GITHUB_ORG}/repos?per_page=100&page=${page}&sort=updated`, {
+      headers: {
+        Accept: 'application/vnd.github+json',
+      },
+    });
+
+    if (!response.ok) {
+      // Org fetch failure is non-fatal — continue with personal repos
+      break;
+    }
+
+    const pageRepos = await response.json();
+    repos.push(...pageRepos);
+
+    if (pageRepos.length < 100) {
+      break;
+    }
+
+    page += 1;
+  }
+
+  // Filter: public, non-fork, exclude meta repos
+  return repos.filter((repo) => {
+    if (repo.fork) return false;
+    if (repo.name === 'joshuawink.github.io') return false;
+    if (repo.name === '.github') return false;
+    if (repo.private) return false;
+    return true;
+  });
 }
 
 class SeedProjectsFilter {

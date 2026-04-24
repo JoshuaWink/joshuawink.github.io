@@ -190,6 +190,30 @@ body.site-body {
 .site-project__updated {
   font-size: var(--cup-font-size-xs);
   color: color-mix(in srgb, var(--cup-color-secondary) 70%, transparent);
+  display: flex;
+  align-items: center;
+  gap: var(--cup-space-xs);
+  flex-wrap: wrap;
+}
+
+.site-project__lang,
+.site-project__org {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.site-project__lang {
+  background: color-mix(in srgb, var(--cup-color-primary) 20%, transparent);
+  color: var(--cup-color-primary);
+}
+
+.site-project__org {
+  background: color-mix(in srgb, var(--cup-color-accent, #f7931e) 20%, transparent);
+  color: var(--cup-color-accent, #f7931e);
 }
 
 .site-project .cup-card___footer {
