@@ -216,6 +216,34 @@ body.site-body {
   color: var(--cup-color-accent, #f7931e);
 }
 
+/* ── Run button (experimental) ── */
+
+.site-project__run-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: color-mix(in srgb, #f59e0b 15%, var(--cup-color-surface)) !important;
+  border: 1px solid color-mix(in srgb, #f59e0b 40%, transparent) !important;
+  color: #f59e0b !important;
+  font-size: var(--cup-font-size-sm);
+}
+
+.site-project__run-btn:hover {
+  background: color-mix(in srgb, #f59e0b 25%, var(--cup-color-surface)) !important;
+}
+
+.site-project__run-icon {
+  font-size: 0.75rem;
+}
+
+.site-project__experimental {
+  font-size: 0.6rem;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  opacity: 0.7;
+  font-weight: 700;
+}
+
 .site-project .cup-card___footer {
   display: flex;
   gap: var(--cup-space-sm);

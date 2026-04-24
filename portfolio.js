@@ -424,6 +424,10 @@ function renderProjectCard(project) {
     ? `<span class="site-project__org">Orchestrate</span>`
     : '';
   const primaryLabel = project.hasLiveSite ? 'Open' : 'View';
+  const runnerUrl = `./runner.html?repo=${encodeURIComponent(project.name)}&owner=${encodeURIComponent(project.owner)}`;
+  const runButton = !project.hasLiveSite
+    ? `<a class="cup-button cup-button--accent site-project__run-btn" href="${escapeHtml(runnerUrl)}"><span class="site-project__run-icon">▶</span> Run <span class="site-project__experimental">Experimental</span></a>`
+    : '';
 
   return `
     <article class="cup-card site-project">
@@ -435,6 +439,7 @@ function renderProjectCard(project) {
       <div class="cup-card___footer">
         <a class="cup-button cup-button--primary" href="${escapeHtml(project.url)}">${primaryLabel}</a>
         ${project.hasLiveSite ? `<a class="cup-button cup-button--secondary" href="${escapeHtml(project.repoUrl)}" target="_blank" rel="noreferrer">Source</a>` : ''}
+        ${runButton}
       </div>
     </article>
   `;

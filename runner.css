@@ -1,0 +1,275 @@
+/* ── Runner — Experimental in-browser code execution ── */
+
+/* ── Banner ── */
+
+.runner-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--cup-space-sm);
+  padding: var(--cup-space-sm) var(--cup-space-lg);
+  background: color-mix(in srgb, #f59e0b 12%, var(--cup-color-surface));
+  border-bottom: 1px solid color-mix(in srgb, #f59e0b 30%, transparent);
+  font-size: var(--cup-font-size-sm);
+  color: var(--cup-color-secondary);
+}
+
+.runner-banner__badge {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  background: #f59e0b;
+  color: #000;
+  flex-shrink: 0;
+}
+
+/* ── Layout ── */
+
+.runner-main {
+  display: grid;
+  grid-template-columns: 260px 1fr;
+  height: calc(100vh - 110px);
+  overflow: hidden;
+}
+
+@media (max-width: 768px) {
+  .runner-main {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+    height: auto;
+  }
+}
+
+/* ── Sidebar ── */
+
+.runner-sidebar {
+  border-right: 1px solid var(--cup-color-border);
+  overflow-y: auto;
+  padding: var(--cup-space-md);
+  display: flex;
+  flex-direction: column;
+  gap: var(--cup-space-md);
+}
+
+.runner-sidebar__header h2 {
+  font-size: var(--cup-font-size-lg);
+  margin: 0;
+  text-transform: capitalize;
+}
+
+.runner-sidebar__desc {
+  font-size: var(--cup-font-size-sm);
+  color: var(--cup-color-secondary);
+  margin: var(--cup-space-xs) 0 0;
+}
+
+.runner-sidebar__meta {
+  display: flex;
+  gap: var(--cup-space-xs);
+  flex-wrap: wrap;
+  margin-top: var(--cup-space-xs);
+}
+
+.runner-sidebar__error {
+  color: #ef4444;
+  font-size: var(--cup-font-size-sm);
+}
+
+.runner-sidebar__loading {
+  color: var(--cup-color-secondary);
+  font-size: var(--cup-font-size-sm);
+  font-style: italic;
+}
+
+/* ── Meta badges ── */
+
+.runner-meta__lang,
+.runner-meta__runtime {
+  display: inline-block;
+  font-size: 0.7rem;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-weight: 600;
+}
+
+.runner-meta__lang {
+  background: color-mix(in srgb, var(--cup-color-primary) 20%, transparent);
+  color: var(--cup-color-primary);
+}
+
+.runner-meta__runtime {
+  background: color-mix(in srgb, var(--cup-color-secondary) 15%, transparent);
+  color: var(--cup-color-secondary);
+}
+
+/* ── File tree ── */
+
+.runner-sidebar__files {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.runner-file {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 4px 8px;
+  border: none;
+  background: none;
+  color: var(--cup-color-on-surface);
+  font-size: var(--cup-font-size-sm);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  cursor: pointer;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.runner-file:hover {
+  background: color-mix(in srgb, var(--cup-color-primary) 10%, transparent);
+}
+
+.runner-file--active {
+  background: color-mix(in srgb, var(--cup-color-primary) 20%, transparent);
+  color: var(--cup-color-primary);
+  font-weight: 600;
+}
+
+.runner-file--entry {
+  border-left: 2px solid var(--cup-color-primary);
+  padding-left: 6px;
+}
+
+.runner-dir {
+  margin: 0;
+}
+
+.runner-dir__name {
+  display: block;
+  padding: 4px 8px;
+  font-size: var(--cup-font-size-sm);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  cursor: pointer;
+  border-radius: 4px;
+  color: var(--cup-color-secondary);
+}
+
+.runner-dir__name:hover {
+  background: color-mix(in srgb, var(--cup-color-primary) 8%, transparent);
+}
+
+.runner-dir > .runner-file {
+  padding-left: 24px;
+}
+
+/* ── Workspace ── */
+
+.runner-workspace {
+  display: grid;
+  grid-template-rows: 1fr 240px;
+  overflow: hidden;
+}
+
+/* ── Editor ── */
+
+.runner-editor {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-bottom: 1px solid var(--cup-color-border);
+}
+
+.runner-editor__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--cup-space-sm) var(--cup-space-md);
+  border-bottom: 1px solid var(--cup-color-border);
+  background: color-mix(in srgb, var(--cup-color-surface) 95%, var(--cup-color-primary));
+  flex-shrink: 0;
+}
+
+.runner-editor__filename {
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: var(--cup-font-size-sm);
+  color: var(--cup-color-secondary);
+}
+
+.runner-editor__actions {
+  display: flex;
+  gap: var(--cup-space-sm);
+}
+
+.runner-editor__code {
+  flex: 1;
+  overflow: auto;
+  margin: 0;
+  padding: var(--cup-space-md);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  tab-size: 2;
+  white-space: pre;
+  background: var(--cup-color-surface);
+  color: var(--cup-color-on-surface);
+}
+
+.runner-run-btn:not(:disabled) {
+  animation: pulse-run 2s ease-in-out infinite;
+}
+
+@keyframes pulse-run {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--cup-color-primary) 40%, transparent); }
+  50% { box-shadow: 0 0 0 4px color-mix(in srgb, var(--cup-color-primary) 0%, transparent); }
+}
+
+/* ── Terminal ── */
+
+.runner-terminal {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: #0d1117;
+}
+
+.runner-terminal__toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--cup-space-xs) var(--cup-space-md);
+  border-bottom: 1px solid var(--cup-color-border);
+  font-size: var(--cup-font-size-sm);
+  color: var(--cup-color-secondary);
+  flex-shrink: 0;
+}
+
+.runner-terminal__output {
+  flex: 1;
+  overflow: auto;
+  margin: 0;
+  padding: var(--cup-space-sm) var(--cup-space-md);
+  font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #c9d1d9;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.runner-terminal__stdout {
+  color: #c9d1d9;
+}
+
+.runner-terminal__stderr {
+  color: #f85149;
+}
+
+.runner-terminal__system {
+  color: #8b949e;
+  font-style: italic;
+}

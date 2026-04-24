@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Runner — Joshua Wink Portfolio</title>
+  <meta name="description" content="Experimental in-browser code runner — execute portfolio projects directly in the browser.">
+  <link rel="stylesheet" href="./cup-ui/cup.css">
+  <link rel="stylesheet" href="./site.css">
+  <link rel="stylesheet" href="./runner.css">
+</head>
+<body class="site-body site-body--runner">
+  <a class="cup-skip-link" href="#main-content">Skip to content</a>
+
+  <header class="site-header">
+    <a class="site-header__brand" href="/">Joshua Wink</a>
+    <nav class="site-nav" aria-label="Primary">
+      <a href="/portfolio.html">← Portfolio</a>
+    </nav>
+  </header>
+
+  <div class="runner-banner" role="status">
+    <span class="runner-banner__badge">Experimental</span>
+    <span>In-browser code runner — executes project code via WASM runtimes. Some projects may not run correctly.</span>
+  </div>
+
+  <main id="main-content" class="runner-main">
+    <div class="runner-sidebar" id="runner-sidebar">
+      <div class="runner-sidebar__header">
+        <h2 id="runner-project-title">Loading…</h2>
+        <p id="runner-project-desc" class="runner-sidebar__desc"></p>
+        <div id="runner-project-meta" class="runner-sidebar__meta"></div>
+      </div>
+      <div class="runner-sidebar__files" id="runner-file-tree">
+        <p class="runner-sidebar__loading">Scanning repo…</p>
+      </div>
+    </div>
+
+    <div class="runner-workspace">
+      <div class="runner-editor" id="runner-editor">
+        <div class="runner-editor__toolbar">
+          <span id="runner-file-name" class="runner-editor__filename">No file selected</span>
+          <div class="runner-editor__actions">
+            <button id="runner-run-btn" class="cup-button cup-button--primary runner-run-btn" disabled>
+              ▶ Run
+            </button>
+            <a id="runner-playground-link" class="cup-button cup-button--secondary" href="#" target="_blank" rel="noreferrer" hidden>
+              Open in Playground
+            </a>
+            <a id="runner-repo-link" class="cup-button cup-button--secondary" href="#" target="_blank" rel="noreferrer">
+              Source
+            </a>
+          </div>
+        </div>
+        <pre id="runner-code" class="runner-editor__code"><code>Select a file to view…</code></pre>
+      </div>
+
+      <div class="runner-terminal" id="runner-terminal">
+        <div class="runner-terminal__toolbar">
+          <span>Terminal</span>
+          <button id="runner-clear-btn" class="cup-button cup-button--secondary cup-button--sm">Clear</button>
+        </div>
+        <pre id="runner-output" class="runner-terminal__output" aria-live="polite"></pre>
+      </div>
+    </div>
+  </main>
+
+  <script src="./site-shell.js"></script>
+  <script type="module" src="./runner.js"></script>
+</body>
+</html>
