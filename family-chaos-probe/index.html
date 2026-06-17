@@ -67,7 +67,7 @@ header{background:var(--surf);border-bottom:1px solid var(--border);padding:8px 
 .pc-likes{font-size:10px;color:var(--muted)}.pc-likes em{color:var(--accent);font-style:normal}
 .pc-load{font-size:10px;color:var(--muted);margin-top:4px}
 #grid-area{flex:1;overflow:auto;min-height:0;min-width:0;display:flex;flex-direction:column}
-#game-cal{flex:1;min-height:0}
+#game-cal{flex:1;min-height:0;overflow:auto}
 .hint{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:10px;color:var(--muted);text-align:center;padding:32px}
 .hint p{font-size:15px;color:var(--text);font-weight:600}
 .hint small{font-size:12px;max-width:300px;line-height:1.5}
@@ -404,6 +404,8 @@ async function initCalendar() {
   if (hint) hint.style.display = 'none';
 
   cal.setOption('view', 'resourceTimeline');
+  cal.setOption('rowHeight', 46);
+  cal.setOption('hourWidth', 52);
   cal.setOption('slotMinTime', String(SH).padStart(2, '0') + ':00');
   cal.setOption('slotMaxTime', String(EH).padStart(2, '0') + ':00');
   cal.setOption('slotDuration', '00:30:00');
