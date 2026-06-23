@@ -18,10 +18,10 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
 
-  <!-- cup-ui: single import gets all layers, tokens, components -->
+  <!-- cup-ui: single import -->
   <link rel="stylesheet" href="cup-ui/cup.css">
 
-  <!-- App styles (extends cup tokens) -->
+  <!-- App styles -->
   <link rel="stylesheet" href="css/app.css">
 </head>
 <body data-theme="dark">
@@ -29,7 +29,7 @@
   <!-- Skip link (a11y) -->
   <a href="#main" class="cup-skip-link">Skip to content</a>
 
-  <!-- ── App Shell ── -->
+  <!-- ── Header ── -->
   <header class="app-header">
     <div class="title-stack">
       <p class="eyebrow">The Color-Block Journal</p>
@@ -42,97 +42,71 @@
   </header>
 
   <main id="main" class="app-main">
-    <section class="card intro-card" aria-labelledby="big-picture">
-      <h2 id="big-picture">A stress-free way to protect your focus</h2>
-      <p>
-        You do not need a clock to understand your day. You only need transitions.
-        Write a short pause line, shift your color, and let the page reveal your rhythm.
-      </p>
+
+    <!-- The journal page: draw with your active pen color -->
+    <section class="journal-section" aria-label="Journal page">
+      <cup-canvas
+        id="journal-canvas"
+        line-width="2"
+        palm-reject
+        aria-label="Journal writing surface — draw notes with your active pen color"
+      ></cup-canvas>
     </section>
 
-    <section class="card" aria-labelledby="pen-rack-title">
-      <h2 id="pen-rack-title">Color shift</h2>
-      <p class="section-note">
-        On each transition, switch color. Keep red as your interruption trapdoor.
-      </p>
-
-      <div id="pen-rack" class="pen-rack" role="radiogroup" aria-label="Pen color selection">
-        <button class="pen-btn pen--sunrise" type="button" data-pen="sunrise" role="radio" aria-checked="false">
-          <span class="swatch" aria-hidden="true"></span>
-          <span>Sunrise</span>
-        </button>
-        <button class="pen-btn pen--harbor" type="button" data-pen="harbor" role="radio" aria-checked="false">
-          <span class="swatch" aria-hidden="true"></span>
-          <span>Harbor</span>
-        </button>
-        <button class="pen-btn pen--fern" type="button" data-pen="fern" role="radio" aria-checked="false">
-          <span class="swatch" aria-hidden="true"></span>
-          <span>Fern</span>
-        </button>
-        <button class="pen-btn pen--gold" type="button" data-pen="gold" role="radio" aria-checked="false">
-          <span class="swatch" aria-hidden="true"></span>
-          <span>Gold</span>
-        </button>
-        <button class="pen-btn pen--plum" type="button" data-pen="plum" role="radio" aria-checked="false">
-          <span class="swatch" aria-hidden="true"></span>
-          <span>Plum</span>
-        </button>
-        <button class="pen-btn pen--interrupt" type="button" data-pen="interrupt" role="radio" aria-checked="false">
-          <span class="swatch" aria-hidden="true"></span>
-          <span>Interrupt</span>
-        </button>
+    <!-- Pen selection + text capture -->
+    <section class="controls-section" aria-label="Pen and capture">
+      <div class="pen-row">
+        <div id="pen-rack" class="pen-rack-compact" role="radiogroup" aria-label="Pen color selection">
+          <button class="pen-dot pen--sunrise" type="button" data-pen="sunrise" role="radio" aria-checked="false" aria-label="Sunrise"></button>
+          <button class="pen-dot pen--harbor" type="button" data-pen="harbor" role="radio" aria-checked="false" aria-label="Harbor"></button>
+          <button class="pen-dot pen--fern" type="button" data-pen="fern" role="radio" aria-checked="false" aria-label="Fern"></button>
+          <button class="pen-dot pen--gold" type="button" data-pen="gold" role="radio" aria-checked="false" aria-label="Gold"></button>
+          <button class="pen-dot pen--plum" type="button" data-pen="plum" role="radio" aria-checked="false" aria-label="Plum"></button>
+          <button class="pen-dot pen--interrupt" type="button" data-pen="interrupt" role="radio" aria-checked="false" aria-label="Interrupt (red)"></button>
+        </div>
+        <span id="active-pen-label" class="active-pen-label">Sunrise</span>
+        <cup-button id="next-pen" type="button" variant="ghost">Next →</cup-button>
       </div>
 
-      <div class="quick-actions">
-        <cup-button id="next-pen" type="button" variant="secondary">Shift To Next Color</cup-button>
-        <p id="active-pen-label" class="active-pen-label">Current color: Sunrise</p>
-      </div>
-    </section>
-
-    <section class="card" aria-labelledby="pause-title">
-      <h2 id="pause-title">The 5-word pause</h2>
-      <p class="section-note">Close what you just finished, then name what comes next.</p>
-
-      <form id="pause-form" class="app-form" novalidate>
-        <cup-field label="Pause line" required>
-          <cup-input id="pause-input" name="pause" placeholder="Finished schema. Starting integration tests."></cup-input>
+      <form id="pause-form" class="capture-bar" novalidate>
+        <cup-field label="5-word pause" required>
+          <cup-input id="pause-input" name="pause" placeholder="Finished schema. Starting tests."></cup-input>
         </cup-field>
-
-        <div class="app-actions">
+        <div class="capture-actions">
           <cup-button type="submit" variant="primary">Log Pause</cup-button>
-          <cup-button id="log-break" type="button" variant="ghost">Log Break Boundary</cup-button>
+          <cup-button id="log-break" type="button" variant="ghost">Break ⏎</cup-button>
         </div>
       </form>
     </section>
 
+    <!-- Interruption trapdoor -->
     <section class="card trapdoor-card" aria-labelledby="interrupt-title">
       <h2 id="interrupt-title">Interruption trapdoor</h2>
-      <p class="section-note">
-        Life happens. Capture the interruption quickly, handle it, and return to your focus color.
-      </p>
-
-      <form id="interrupt-form" class="app-form" novalidate>
+      <p class="section-note">Capture it quickly, handle it, then return to your focus color.</p>
+      <form id="interrupt-form" class="capture-bar" novalidate>
         <cup-field label="Interruption note" required>
           <cup-input id="interrupt-input" name="interrupt" placeholder="Doorbell. Taking package."></cup-input>
         </cup-field>
-
-        <div class="app-actions">
-          <cup-button type="submit" variant="secondary">Capture Interruption</cup-button>
-        </div>
+        <cup-button type="submit" variant="secondary">Capture ↯</cup-button>
       </form>
     </section>
 
+    <!-- Visual story: canvas-rendered color bands -->
     <section class="card story-card" aria-labelledby="story-title">
       <h2 id="story-title">The visual story</h2>
       <p id="flow-summary" class="flow-summary">Add your first pause to begin the story of today.</p>
-      <div id="color-map" class="color-map" role="img" aria-label="Color blocks representing your day"></div>
+      <cup-canvas id="story-canvas" aria-label="Color blocks representing your day"></cup-canvas>
       <p id="story-stats" class="story-stats"></p>
     </section>
 
-    <section class="card" aria-labelledby="timeline-title">
-      <h2 id="timeline-title">Today, in sequence</h2>
+    <!-- Today in words (collapsible) -->
+    <details class="card timeline-card">
+      <summary>
+        <h2 id="timeline-title">Today, in words</h2>
+      </summary>
       <ol id="timeline" class="timeline" aria-live="polite"></ol>
-    </section>
+    </details>
+
   </main>
 
   <footer class="app-footer">

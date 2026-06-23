@@ -3,7 +3,7 @@
 //
 // Docs: templates/pwa/README.md (customization), docs/cup-core.md (components)
 
-const CACHE_NAME = 'color-block-journal-v2';
+const CACHE_NAME = 'color-block-journal-v3';
 
 // Static assets to pre-cache on install.
 // Update this list when you add new files.
