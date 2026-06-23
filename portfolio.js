@@ -23,6 +23,14 @@ const FOLIO_DEFS = [
 
 const SEED_REPOS = [
   {
+    name: 'color-block-journal',
+    description: 'A gentle color-block journaling ritual for single-tasking, cleaner transitions, and interruption recovery.',
+    homepage: '/portfolio/color-block-journal/',
+    html_url: 'https://github.com/JoshuaWink/joshuawink.github.io/tree/main/portfolio/color-block-journal',
+    language: 'JavaScript',
+    updated_at: '2026-06-23T05:00:00Z',
+  },
+  {
     name: 'dbqhelp',
     description: 'DBQHelp.com redesign prototype - veteran mental health evaluation service',
     homepage: null,
@@ -168,10 +176,12 @@ function normalizeRepo(repo) {
   const isOrg = owner.toLowerCase() === GITHUB_ORG.toLowerCase();
   const repoRoot = isOrg ? GITHUB_ORG_ROOT : GITHUB_REPO_ROOT;
   const homepage = typeof repo.homepage === 'string' ? repo.homepage.trim() : '';
+  const hasRelativeHomepage = homepage.startsWith('/');
+  const hasAbsoluteHomepage = homepage.startsWith('http');
 
   // Determine URL: prefer homepage, then Pages if available, then repo URL
   let url;
-  if (homepage && homepage.startsWith('http')) {
+  if (homepage && (hasAbsoluteHomepage || hasRelativeHomepage)) {
     url = ensureTrailingSlash(homepage);
   } else if (repo.has_pages) {
     url = `${GITHUB_PAGES_ROOT}/${repo.name}/`;
@@ -179,7 +189,7 @@ function normalizeRepo(repo) {
     url = repo.html_url || `${repoRoot}/${repo.name}`;
   }
 
-  const hasLiveSite = homepage.startsWith('http') || repo.has_pages;
+  const hasLiveSite = hasAbsoluteHomepage || hasRelativeHomepage || repo.has_pages;
   const updatedAt = repo.updated_at || new Date().toISOString();
   const updatedAtMs = Date.parse(updatedAt) || 0;
   const title = humanizeName(repo.name);

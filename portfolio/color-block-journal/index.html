@@ -1,0 +1,155 @@
+<!-- Color-Block Journal PWA -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#111820">
+  <meta name="description" content="A gentle color-block journaling ritual for transitions, focus, and interruption recovery.">
+
+  <title>Color-Block Journal</title>
+
+  <!-- PWA manifest -->
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=Manrope:wght@400;500;700&display=swap" rel="stylesheet">
+
+  <!-- cup-ui: single import gets all layers, tokens, components -->
+  <link rel="stylesheet" href="cup-ui/cup.css">
+
+  <!-- App styles (extends cup tokens) -->
+  <link rel="stylesheet" href="css/app.css">
+</head>
+<body data-theme="dark">
+
+  <!-- Skip link (a11y) -->
+  <a href="#main" class="cup-skip-link">Skip to content</a>
+
+  <!-- ── App Shell ── -->
+  <header class="app-header">
+    <div class="title-stack">
+      <p class="eyebrow">The Color-Block Journal</p>
+      <h1 class="app-title">Close one loop. Start the next.</h1>
+    </div>
+    <nav class="app-nav" aria-label="Display and page controls">
+      <cup-toggle id="theme-toggle" label="Dark mode" checked></cup-toggle>
+      <cup-button id="clear-day" type="button" variant="ghost">Start Fresh Page</cup-button>
+    </nav>
+  </header>
+
+  <main id="main" class="app-main">
+    <section class="card intro-card" aria-labelledby="big-picture">
+      <h2 id="big-picture">A stress-free way to protect your focus</h2>
+      <p>
+        You do not need a clock to understand your day. You only need transitions.
+        Write a short pause line, shift your color, and let the page reveal your rhythm.
+      </p>
+    </section>
+
+    <section class="card" aria-labelledby="pen-rack-title">
+      <h2 id="pen-rack-title">Color shift</h2>
+      <p class="section-note">
+        On each transition, switch color. Keep red as your interruption trapdoor.
+      </p>
+
+      <div id="pen-rack" class="pen-rack" role="radiogroup" aria-label="Pen color selection">
+        <button class="pen-btn pen--sunrise" type="button" data-pen="sunrise" role="radio" aria-checked="false">
+          <span class="swatch" aria-hidden="true"></span>
+          <span>Sunrise</span>
+        </button>
+        <button class="pen-btn pen--harbor" type="button" data-pen="harbor" role="radio" aria-checked="false">
+          <span class="swatch" aria-hidden="true"></span>
+          <span>Harbor</span>
+        </button>
+        <button class="pen-btn pen--fern" type="button" data-pen="fern" role="radio" aria-checked="false">
+          <span class="swatch" aria-hidden="true"></span>
+          <span>Fern</span>
+        </button>
+        <button class="pen-btn pen--gold" type="button" data-pen="gold" role="radio" aria-checked="false">
+          <span class="swatch" aria-hidden="true"></span>
+          <span>Gold</span>
+        </button>
+        <button class="pen-btn pen--plum" type="button" data-pen="plum" role="radio" aria-checked="false">
+          <span class="swatch" aria-hidden="true"></span>
+          <span>Plum</span>
+        </button>
+        <button class="pen-btn pen--interrupt" type="button" data-pen="interrupt" role="radio" aria-checked="false">
+          <span class="swatch" aria-hidden="true"></span>
+          <span>Interrupt</span>
+        </button>
+      </div>
+
+      <div class="quick-actions">
+        <cup-button id="next-pen" type="button" variant="secondary">Shift To Next Color</cup-button>
+        <p id="active-pen-label" class="active-pen-label">Current color: Sunrise</p>
+      </div>
+    </section>
+
+    <section class="card" aria-labelledby="pause-title">
+      <h2 id="pause-title">The 5-word pause</h2>
+      <p class="section-note">Close what you just finished, then name what comes next.</p>
+
+      <form id="pause-form" class="app-form" novalidate>
+        <cup-field label="Pause line" required>
+          <cup-input id="pause-input" name="pause" placeholder="Finished schema. Starting integration tests."></cup-input>
+        </cup-field>
+
+        <div class="app-actions">
+          <cup-button type="submit" variant="primary">Log Pause</cup-button>
+          <cup-button id="log-break" type="button" variant="ghost">Log Break Boundary</cup-button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card trapdoor-card" aria-labelledby="interrupt-title">
+      <h2 id="interrupt-title">Interruption trapdoor</h2>
+      <p class="section-note">
+        Life happens. Capture the interruption quickly, handle it, and return to your focus color.
+      </p>
+
+      <form id="interrupt-form" class="app-form" novalidate>
+        <cup-field label="Interruption note" required>
+          <cup-input id="interrupt-input" name="interrupt" placeholder="Doorbell. Taking package."></cup-input>
+        </cup-field>
+
+        <div class="app-actions">
+          <cup-button type="submit" variant="secondary">Capture Interruption</cup-button>
+        </div>
+      </form>
+    </section>
+
+    <section class="card story-card" aria-labelledby="story-title">
+      <h2 id="story-title">The visual story</h2>
+      <p id="flow-summary" class="flow-summary">Add your first pause to begin the story of today.</p>
+      <div id="color-map" class="color-map" role="img" aria-label="Color blocks representing your day"></div>
+      <p id="story-stats" class="story-stats"></p>
+    </section>
+
+    <section class="card" aria-labelledby="timeline-title">
+      <h2 id="timeline-title">Today, in sequence</h2>
+      <ol id="timeline" class="timeline" aria-live="polite"></ol>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Single-tasking is not a productivity trick. It is nervous-system care.</p>
+  </footer>
+
+  <!-- cup-ui: registers all web components -->
+  <script type="module" src="cup-ui/cup.js"></script>
+
+  <!-- App: pipeline orchestrator -->
+  <script type="module" src="js/app.js"></script>
+
+  <!-- Service worker registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('sw.js').catch(() => {});
+    }
+  </script>
+</body>
+</html>
